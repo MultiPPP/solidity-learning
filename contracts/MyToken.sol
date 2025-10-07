@@ -15,10 +15,28 @@ contract MyToken {
 
     // 생성자 // contract 이름과 헷갈리지 않도록 "_"를 붙여 준다.
     // 문자열을 받을 때, type 뒤에 memory를 이용해야 한다.
-    constructor(string memory _name, string memory _symbol, uint8 _decimals) {
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        uint8 _decimals,
+        uint256 _amount
+    ) {
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
+        _mint(_amount * 10 ** uint256(decimals), msg.sender); // contract를 발행하는 사람에게 amount 만큼 새롭게 생성
+    }
+
+    function _mint(uint256 amount, address owner) internal {
+        totalSupply += amount;
+        balanceOf[owner] += amount;
+    }
+
+    function transfer(uint256 amount, address to) external {
+        require(balanceOf[msg.sender] >= amount, "Insufficient balance");
+
+        balanceOf[msg.sender] -= amount;
+        balanceOf[to] += amount;
     }
 
     // // 호출하는 함수
