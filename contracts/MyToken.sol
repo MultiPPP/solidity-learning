@@ -3,6 +3,9 @@ pragma solidity ^0.8.28;
 
 // 객체지향에서 class의 역할이 solidity에서는 contract
 contract MyToken {
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Approval(address indexed spender, uint256 amount);
+
     string public name;
     string public symbol; // 심볼
     uint8 public decimals; // 1 ETH --> 1*10^18 wei, 1 wei --> 1*10^-18
@@ -12,6 +15,8 @@ contract MyToken {
     uint256 public totalSupply;
     // 누가 몇 개의 토큰을 가지고 있는가?
     mapping(address => uint256) public balanceOf;
+
+    mapping(address => mapping(address => uint256)) allowance;
 
     // 생성자 // contract 이름과 헷갈리지 않도록 "_"를 붙여 준다.
     // 문자열을 받을 때, type 뒤에 memory를 이용해야 한다.
@@ -27,9 +32,27 @@ contract MyToken {
         _mint(_amount * 10 ** uint256(decimals), msg.sender); // contract를 발행하는 사람에게 amount 만큼 새롭게 생성
     }
 
+    function approve(address spender, uint256 amount) external {
+        allowance[msg.sender][spender] = amount;
+
+        emit Approval(spender, amount);
+    }
+
     function _mint(uint256 amount, address owner) internal {
         totalSupply += amount;
         balanceOf[owner] += amount;
+
+        emit Transfer(address(0), owner, amount);
+    }
+
+    function transferFrom(address from, address to, uint256 amount) external {
+        address spender = msg.sender;
+        require(allowance[from][spender] >= amount, "insufficient allowance");
+        allowance[from][spender] -= amount;
+        balanceOf[from] -= amount;
+        balanceOf[to] += amount;
+
+        emit Transfer(from, to, amount);
     }
 
     function transfer(uint256 amount, address to) external {
@@ -37,6 +60,8 @@ contract MyToken {
 
         balanceOf[msg.sender] -= amount;
         balanceOf[to] += amount;
+
+        emit Transfer(msg.sender, to, amount);
     }
 
     // // 호출하는 함수
