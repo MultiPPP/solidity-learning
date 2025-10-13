@@ -16,7 +16,7 @@ contract MyToken {
     // 누가 몇 개의 토큰을 가지고 있는가?
     mapping(address => uint256) public balanceOf;
 
-    mapping(address => mapping(address => uint256)) allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     // 생성자 // contract 이름과 헷갈리지 않도록 "_"를 붙여 준다.
     // 문자열을 받을 때, type 뒤에 memory를 이용해야 한다.
