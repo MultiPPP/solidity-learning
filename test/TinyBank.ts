@@ -46,4 +46,15 @@ describe("TinyBank", () => {
       );
     });
   });
+
+  describe("Withdraw", () => {
+    it("should return 0 staked after withdrawing total token", async () => {
+      const signer0 = signers[0];
+      const stakingAmount = hre.ethers.parseUnits("50", DECIMALS);
+      await myTokenC.approve(await TinyBankC.getAddress(), stakingAmount); // approve를 받고 나서
+      await TinyBankC.stake(stakingAmount);
+      await TinyBankC.withdraw(stakingAmount);
+      expect(await TinyBankC.staked(signer0.address)).equal(0);
+    });
+  });
 });
