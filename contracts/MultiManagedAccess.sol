@@ -50,7 +50,7 @@ contract MultiManagedAccess {
 
     // 모든 매니저가 확인을 했는지?
     modifier onlyAllConfirmed() {
-        require(allConfirmed(), "Not all managers confirmed yet");
+        require(allConfirmed(), "Not all confirmed yet");
         reset();
         _;
     }
@@ -66,6 +66,6 @@ contract MultiManagedAccess {
                 break;
             }
         }
-        require(found, "You are not one of managers");
+        require(found, "You are not a manager");
     }
 }
