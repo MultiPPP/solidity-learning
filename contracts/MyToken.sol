@@ -2,7 +2,10 @@
 pragma solidity ^0.8.28;
 
 // 객체지향에서 class의 역할이 solidity에서는 contract
-contract MyToken {
+// 상속의 개념을 이용 ->
+import "./ManagedAccess.sol";
+
+contract MyToken is ManagedAccess {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed spender, uint256 amount);
 
@@ -25,7 +28,7 @@ contract MyToken {
         string memory _symbol,
         uint8 _decimals,
         uint256 _amount
-    ) {
+    ) ManagedAccess(msg.sender, msg.sender) {
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
@@ -38,13 +41,6 @@ contract MyToken {
         emit Approval(spender, amount);
     }
 
-    function _mint(uint256 amount, address owner) internal {
-        totalSupply += amount;
-        balanceOf[owner] += amount;
-
-        emit Transfer(address(0), owner, amount);
-    }
-
     function transferFrom(address from, address to, uint256 amount) external {
         address spender = msg.sender;
         require(allowance[from][spender] >= amount, "insufficient allowance");
@@ -55,8 +51,19 @@ contract MyToken {
         emit Transfer(from, to, amount);
     }
 
-    function mint(uint256 amount, address owner) external {
-        _mint(amount, owner);
+    function mint(uint256 amount, address to) external onlyManager {
+        _mint(amount, to);
+    }
+
+    function setManager(address _manager) external onlyOwner {
+        manager = _manager;
+    }
+
+    function _mint(uint256 amount, address to) internal {
+        totalSupply += amount;
+        balanceOf[to] += amount;
+
+        emit Transfer(address(0), to, amount);
     }
 
     function transfer(uint256 amount, address to) external {
