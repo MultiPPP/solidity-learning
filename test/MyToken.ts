@@ -43,10 +43,22 @@ describe("myTokenDeploy", () => {
     it("should return 1MT balance for signer 0", async () => {
       const signer0 = signers[0];
       expect(await myTokenC.balanceOf(signer0)).equal(
-        MINTING_AMOUNT * 10n ** DECIMALS
-      ); // Big Number
+        MINTING_AMOUNT * 10n ** DECIMALS // Big Number
+      );
+    });
+
+    // TDD: Test Driven Development
+    // // 테스트 코드를 먼저 개발하고, 테스트 코드가 통과가 되도록 실제 어플리케이션을 개발한다
+    it("should return or revert when minting infinitely", async () => {
+      const hacker = signers[2];
+      const mintingAgainAmount = hre.ethers.parseUnits("10000", DECIMALS);
+      await expect(
+        // 권한이 없는 유저가 mint function 호출 시에는 transaction이 revert 되도록
+        myTokenC.connect(hacker).mint(mintingAgainAmount, hacker.address)
+      ).to.be.revertedWith("You are not authorized to manage this token");
     });
   });
+
   describe("Transfer", () => {
     it("should have 0.5MT", async () => {
       const signer0 = signers[0];
@@ -79,6 +91,7 @@ describe("myTokenDeploy", () => {
       ).to.be.revertedWith("Insufficient balance");
     });
   });
+
   describe("TransferFrom", () => {
     it("should emit Approval event", async () => {
       const signer1 = signers[1];
@@ -102,6 +115,7 @@ describe("myTokenDeploy", () => {
       ).to.be.revertedWith("insufficient allowance");
     });
   });
+
   describe("Testcase", () => {
     it("should approve & transferFrom signer0 -> signer1", async () => {
       const signer0 = signers[0];
