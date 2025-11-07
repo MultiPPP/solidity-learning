@@ -55,7 +55,7 @@ describe("myTokenDeploy", () => {
       await expect(
         // 권한이 없는 유저가 mint function 호출 시에는 transaction이 revert 되도록
         myTokenC.connect(hacker).mint(mintingAgainAmount, hacker.address)
-      ).to.be.revertedWith("You are not authorized to manage this token");
+      ).to.be.revertedWith("You are not authorized to manage this contract");
     });
   });
 
