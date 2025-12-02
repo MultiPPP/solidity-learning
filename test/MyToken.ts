@@ -40,10 +40,12 @@ describe("myTokenDeploy", () => {
 
   describe("Mint", () => {
     // test balanceOf // 1MT = 1 * 10^18
-    it("should return 1MT balance for signer 0", async () => {
+    it("should return initial supply + 1MT balance for signer 0", async () => {
       const signer0 = signers[0];
+      const oneMt = hre.ethers.parseUnits("1", DECIMALS);
+      await myTokenC.mint(oneMt, signer0.address);
       expect(await myTokenC.balanceOf(signer0)).equal(
-        MINTING_AMOUNT * 10n ** DECIMALS // Big Number
+        MINTING_AMOUNT * 10n ** DECIMALS + oneMt // Big Number
       );
     });
 
@@ -88,7 +90,7 @@ describe("myTokenDeploy", () => {
           hre.ethers.parseUnits((MINTING_AMOUNT + 1n).toString(), DECIMALS),
           signer1.address
         )
-      ).to.be.revertedWith("Insufficient balance");
+      ).to.be.revertedWith("insufficient balance");
     });
   });
 
